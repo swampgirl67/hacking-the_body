@@ -1,0 +1,49 @@
+
+import oscP5.*;
+import netP5.*;
+
+import processing.serial.*;
+
+int value;
+Serial myPort;
+int val;  
+  
+OscP5 oscP5;
+NetAddress myRemoteLocation;
+
+void setup() {
+  size(400,400);
+  
+  oscP5 = new OscP5(this,8000);
+   myRemoteLocation = new NetAddress("169.254.1.1",9000);
+  
+  String portName = Serial.list()[11];
+  myPort = new Serial(this, portName, 9600);
+}
+
+
+void draw() {
+  background(0);  
+  if ( myPort.available() > 0) {  // If data is available,
+    val = myPort.read();         // read it and store it in val
+     println(Serial.list());
+  print(val);
+  
+    OscMessage myMessage = new OscMessage("/outputs/digital/9");
+  
+  if (val >= 13) {
+    myMessage.add(1);
+  } else {
+    myMessage.add(0);
+  }
+  
+  OscMessage myMessage2 = new OscMessage("/outputs/digital/10");
+   if (val >= 10) {
+    myMessage2.add(1);
+  } else {
+    myMessage2.add(0);
+  }
+  
+  oscP5.send(myMessage, myRemoteLocation); 
+}
+}
